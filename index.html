@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>USDT Buy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{font-family:Arial;background:#0b0f1a;color:white;text-align:center;margin:0}
+.header{padding:20px;font-size:22px;font-weight:bold;color:#00ffd5}
+.card{background:#12182b;padding:30px;margin:auto;margin-top:40px;width:360px;border-radius:14px;box-shadow:0 0 25px rgba(0,255,213,0.15)}
+input{width:92%;padding:12px;margin:10px;border-radius:8px;border:none;background:#1b2238;color:white}
+button{padding:12px 25px;background:#00ffd5;border:none;border-radius:8px;color:#000;font-weight:bold;cursor:pointer;margin-top:10px}
+button:hover{background:#00c9a7}
+.result{margin-top:15px;font-size:18px;color:#00ffd5}
+</style>
+
+</head>
+<body>
+
+<div class="header">⚡ Instant USDT Buy</div>
+
+<div class="card">
+
+<input type="number" id="usdt" placeholder="Enter USDT Amount">
+<input type="text" id="wallet" placeholder="Your USDT Wallet Address">
+<input type="file" id="screenshot">
+
+<button onclick="createOrder()">Submit Order</button>
+
+<div class="result" id="result"></div>
+<div class="result" id="payment"></div>
+
+</div>
+
+<script>
+
+let price = localStorage.getItem("usdt_price") || 90
+let payment = localStorage.getItem("payment_method") || "UPI: yourupi@bank"
+
+let BOT_TOKEN = "PUT_BOT_TOKEN_HERE"
+let CHAT_ID = "PUT_CHAT_ID_HERE"
+
+function createOrder(){
+
+let usdt=document.getElementById("usdt").value
+let wallet=document.getElementById("wallet").value
+let file=document.getElementById("screenshot").files[0]
+
+if(usdt=="" || wallet=="" || !file){
+alert("Fill all fields and upload screenshot")
+return
+}
+
+let total = usdt * price
+
+let orders = JSON.parse(localStorage.getItem("orders")||"[]")
+
+orders.push({
+usdt:usdt,
+wallet:wallet,
+rupees:total,
+time:new Date().toLocaleString()
+})
+
+localStorage.setItem("orders",JSON.stringify(orders))
+
+let caption = `New USDT Order
+
+USDT: ${usdt}
+INR: ₹${total}
+Wallet: ${wallet}`
+
+let formData = new FormData()
+formData.append("chat_id",CHAT_ID)
+formData.append("caption",caption)
+formData.append("photo",file)
+
+fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`,{
+method:"POST",
+body:formData
+})
+.then(res=>res.json())
+.then(data=>{
+
+alert("Order Sent Successfully")
+document.getElementById("result").innerHTML="Pay ₹"+total
+document.getElementById("payment").innerHTML="Payment Method: "+payment
+
+})
+
+}
+
+</script>
+
+</body>
+</html>
