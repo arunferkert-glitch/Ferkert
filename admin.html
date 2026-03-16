@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{font-family:Arial;background:#0b0f1a;color:white;text-align:center}
+.box{background:#12182b;padding:25px;margin:auto;margin-top:30px;width:380px;border-radius:12px;box-shadow:0 0 20px rgba(0,255,213,0.15)}
+input{width:90%;padding:12px;margin:10px;border-radius:8px;border:none;background:#1b2238;color:white}
+button{padding:12px 20px;background:#00ffd5;color:#000;border:none;border-radius:8px;font-weight:bold}
+.order{background:#1b2238;padding:10px;border-radius:8px;margin-top:10px}
+</style>
+
+</head>
+<body>
+
+<div class="box">
+<h2>Admin Settings</h2>
+<input type="number" id="price" placeholder="USDT Price">
+<input type="text" id="payment" placeholder="Payment Method">
+<button onclick="update()">Update</button>
+</div>
+
+<div class="box">
+<h2>Total Orders</h2>
+<h3 id="total"></h3>
+<div id="orders"></div>
+</div>
+
+<script>
+
+function update(){
+let price=document.getElementById("price").value
+let payment=document.getElementById("payment").value
+localStorage.setItem("usdt_price",price)
+localStorage.setItem("payment_method",payment)
+alert("Settings Updated")
+}
+
+function loadOrders(){
+let orders = JSON.parse(localStorage.getItem("orders")||"[]")
+let html=""
+orders.forEach((o,i)=>{
+html+=`<div class="order">
+Order #${i+1}<br>
+USDT: ${o.usdt}<br>
+Wallet: ${o.wallet}<br>
+INR: ${o.rupees}<br>
+Time: ${o.time}
+</div>`
+})
+document.getElementById("orders").innerHTML=html
+document.getElementById("total").innerHTML=orders.length
+}
+
+loadOrders()
+
+</script>
+
+</body>
+</html>
